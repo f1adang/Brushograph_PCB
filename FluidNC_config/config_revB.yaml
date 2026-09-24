@@ -1,0 +1,98 @@
+# Brushograph PCB rev B - FluidNC configuration
+#
+# Adds the RJ-12 pendant port on UART1; motor and SPI/SD settings are unchanged
+# from the rev A config.  There are no limit switches on this board, so no
+# homing cycles are defined and every limit pin is NO_PIN.
+name: Brushograph rev B (ULN2003 unipolar)
+board: ESP32
+
+stepping:
+  engine: RMT
+  idle_ms: 250
+  dir_delay_us: 1
+  pulse_us: 8
+  disable_delay_us: 0
+
+axes:
+  shared_stepper_disable_pin: NO_PIN
+
+  x:
+    steps_per_mm: 93
+    max_rate_mm_per_min: 1500
+    acceleration_mm_per_sec2: 80
+    max_travel_mm: 200
+    motor0:
+      limit_neg_pin: NO_PIN
+      limit_pos_pin: NO_PIN
+      limit_all_pin: NO_PIN
+      unipolar:
+        phase0_pin: gpio.27
+        phase1_pin: gpio.14
+        phase2_pin: gpio.13
+        phase3_pin: gpio.4
+
+  y:
+    steps_per_mm: 93
+    max_rate_mm_per_min: 1500
+    acceleration_mm_per_sec2: 80
+    max_travel_mm: 200
+    motor0:
+      limit_neg_pin: NO_PIN
+      limit_pos_pin: NO_PIN
+      limit_all_pin: NO_PIN
+      unipolar:
+        phase0_pin: gpio.22
+        phase1_pin: gpio.21
+        phase2_pin: gpio.17
+        phase3_pin: gpio.16
+
+  z:
+    steps_per_mm: 108
+    max_rate_mm_per_min: 1000
+    acceleration_mm_per_sec2: 40
+    max_travel_mm: 100
+    motor0:
+      limit_neg_pin: NO_PIN
+      limit_pos_pin: NO_PIN
+      limit_all_pin: NO_PIN
+      unipolar:
+        phase0_pin: gpio.32
+        phase1_pin: gpio.33
+        phase2_pin: gpio.25
+        phase3_pin: gpio.26
+
+macros:
+  startup_line0: G53 Z10 & G53 Z0
+  macro0:
+  macro1:
+  macro2:
+  after_reset:
+
+# The RJ-12 pendant port (J13) brings UART1 out to a FluidDial on GPIO 2 and 15,
+# with 5V from the switched logic rail behind a 0.5A resettable fuse.
+#
+# GPIO2 is an ESP32 strapping pin: it must not be pulled high while the board
+# boots or the chip drops into download mode. The pendant end must therefore
+# leave it alone until FluidNC has started - which a normal idle-high UART
+# receiver does, but check any pendant that drives the line actively.
+uart1:
+  txd_pin: gpio.2
+  rxd_pin: gpio.15
+  rts_pin: NO_PIN
+  cts_pin: NO_PIN
+  baud: 115200
+  mode: 8N1
+
+uart_channel1:
+  uart_num: 1
+  report_interval_ms: 75
+  message_level: Info
+
+spi:
+  miso_pin: gpio.23
+  mosi_pin: gpio.19
+  sck_pin: gpio.18
+
+sdcard:
+  card_detect_pin: NO_PIN
+  cs_pin: gpio.5

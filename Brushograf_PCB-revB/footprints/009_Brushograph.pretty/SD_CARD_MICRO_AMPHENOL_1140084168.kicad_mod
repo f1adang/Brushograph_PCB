@@ -1,0 +1,433 @@
+(footprint "SD_CARD_MICRO_AMPHENOL_1140084168"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "https://www.amphenol-cs.com/micro-sd-1140084168.html")
+	(tags "sd card micro")
+	(property "Reference" "REF**"
+		(at 0.762 -2.286 0)
+		(layer "Dwgs.User")
+		(uuid "acf5e0dc-f774-4806-91d3-fb3dd44c94b0")
+		(effects
+			(font
+				(size 1.4 1.4)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "SD_CARD_MICRO_AMPHENOL_1140084168"
+		(at 9.891 4.111 0)
+		(layer "F.Fab")
+		(uuid "357860d3-d31a-4125-92d0-8f029694cfa1")
+		(effects
+			(font
+				(size 1.4 1.4)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" "https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/1139/114-00841-68.pdf"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "2576bf4b-990e-4a9c-8307-61872e6f2147")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" "CONN MICRO SD CARD PUSH-PULL R/A"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "e61d1742-33c0-46e1-81df-10e47b1c7ab9")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_line
+		(start -5.975 -10.2)
+		(end -5.975 -9.17)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "463b80a0-9b5a-4a0b-bbdc-d74ad9b6beec")
+	)
+	(fp_line
+		(start -5.975 -5.78)
+		(end -5.975 -0.32)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "f2cca930-283b-4697-8c38-5245363360e8")
+	)
+	(fp_line
+		(start 4.78 -10.2)
+		(end -5.975 -10.2)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "d637adc1-444b-4f07-8796-49908df94400")
+	)
+	(fp_line
+		(start 5.975 -0.32)
+		(end 5.975 -6.48)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "2489b56c-73e9-4768-8979-2b788a3ee69b")
+	)
+	(fp_circle
+		(center 3.2 2.5)
+		(end 3.3 2.5)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "c48ca71c-4505-4095-aaa3-6dc425a32040")
+	)
+	(fp_line
+		(start -6.6 -10.95)
+		(end -6.6 2)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "b088a321-1b4a-4cd3-ad71-830065aa5cb0")
+	)
+	(fp_line
+		(start -6.6 2)
+		(end 6.65 2)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "78099cbb-ca8d-4298-a3a6-ab06142963aa")
+	)
+	(fp_line
+		(start 6.65 -10.95)
+		(end -6.6 -10.95)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "73b0215a-3eca-469f-92dd-48443830b448")
+	)
+	(fp_line
+		(start 6.65 2)
+		(end 6.65 -10.95)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "ed5cc8f6-08c8-46c6-a26f-da072c78da7c")
+	)
+	(fp_line
+		(start -5.975 -10.2)
+		(end -5.975 1.25)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "511f532b-2a86-4f91-b0ce-1285907140ba")
+	)
+	(fp_line
+		(start -5.975 1.25)
+		(end 5.975 1.25)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "c2d7beae-6076-4c52-be16-a59e94e80302")
+	)
+	(fp_line
+		(start 5.975 -10.2)
+		(end -5.975 -10.2)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "3f62d3e4-45d0-4efa-9c81-a96d5cf155f3")
+	)
+	(fp_line
+		(start 5.975 1.25)
+		(end 5.975 -10.2)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "447731f6-7935-4b3f-94cc-dcf846ce3da9")
+	)
+	(fp_circle
+		(center 3.2 2.5)
+		(end 3.3 2.5)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "a6c9ee63-89e5-4945-875c-00f25246b9e9")
+	)
+	(pad "1" smd rect
+		(at 3.2 0.875)
+		(size 0.7 1.75)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "e82e67cf-c439-490c-8a37-317dea9d0e5a")
+	)
+	(pad "2" smd rect
+		(at 2.1 0.875)
+		(size 0.7 1.75)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "25582e47-9fef-4e20-b1f4-da911b88df83")
+	)
+	(pad "3" smd rect
+		(at 1 0.875)
+		(size 0.7 1.75)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "d6eed090-7055-4a02-9b26-46cecf259bad")
+	)
+	(pad "4" smd rect
+		(at -0.1 0.875)
+		(size 0.7 1.75)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "bf836544-1187-4d5c-86cd-8de09de439f5")
+	)
+	(pad "5" smd rect
+		(at -1.2 0.875)
+		(size 0.7 1.75)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "637f5f07-3a23-4690-8412-99a254b8d5d7")
+	)
+	(pad "6" smd rect
+		(at -2.3 0.875)
+		(size 0.7 1.75)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "ab0d77c4-41ff-4c3d-a4e1-442f691c19c9")
+	)
+	(pad "7" smd rect
+		(at -3.4 0.875)
+		(size 0.7 1.75)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "e0d021f0-3287-4901-ad8e-6cdcba4eec03")
+	)
+	(pad "8" smd rect
+		(at -4.5 0.875)
+		(size 0.7 1.75)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "e16e7282-92e4-41ec-9d7a-bf8ca743a48b")
+	)
+	(pad "9" smd rect
+		(at 5.575 -9.925)
+		(size 1 1.55)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "577d6e31-f6a1-41be-ac99-1d299cf4df0f")
+	)
+	(pad "10" smd rect
+		(at -5.625 -8.35)
+		(size 1.45 1)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "36d4a5cd-ac67-4097-b799-d6931418f3bd")
+	)
+	(pad "S1" smd rect
+		(at 5.65 0.75)
+		(size 1.5 1.5)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "7fff0446-707a-4afa-8da3-750520dbed14")
+	)
+	(pad "S2" smd rect
+		(at -5.7 0.75)
+		(size 1.3 1.5)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "2921c4e4-2d20-4974-8768-3abbd00efeb9")
+	)
+	(pad "S3" smd rect
+		(at 5.975 -7.5)
+		(size 0.8 1.4)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "7e0e49b6-a1e5-4081-903e-9133bbea1067")
+	)
+	(pad "S4" smd rect
+		(at -5.95 -6.85)
+		(size 0.8 1.5)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "ed5ed0f7-63ef-4928-9acd-328162c82b0e")
+	)
+	(zone
+		(net 0)
+		(net_name "")
+		(layer "F.Cu")
+		(uuid "78e2abee-8fb4-4220-95fa-a154be274f89")
+		(hatch full 0.508)
+		(connect_pads
+			(clearance 0)
+		)
+		(min_thickness 0.01)
+		(filled_areas_thickness no)
+		(keepout
+			(tracks not_allowed)
+			(vias not_allowed)
+			(pads not_allowed)
+			(copperpour not_allowed)
+			(footprints allowed)
+		)
+		(placement
+			(enabled no)
+			(sheetname "")
+		)
+		(fill
+			(thermal_gap 0.508)
+			(thermal_bridge_width 0.508)
+		)
+		(polygon
+			(pts
+				(xy -4.9 -6) (xy 3.6 -6) (xy 3.6 -4) (xy -4.9 -4)
+			)
+		)
+	)
+	(zone
+		(net 0)
+		(net_name "")
+		(layer "F.Cu")
+		(uuid "09cab814-177d-448c-b6fe-cb74ad2953ba")
+		(hatch full 0.508)
+		(connect_pads
+			(clearance 0)
+		)
+		(min_thickness 0.01)
+		(filled_areas_thickness no)
+		(keepout
+			(tracks not_allowed)
+			(vias not_allowed)
+			(pads not_allowed)
+			(copperpour not_allowed)
+			(footprints allowed)
+		)
+		(placement
+			(enabled no)
+			(sheetname "")
+		)
+		(fill
+			(thermal_gap 0.508)
+			(thermal_bridge_width 0.508)
+		)
+		(polygon
+			(pts
+				(xy -1.95 -10.2) (xy 0.55 -10.2) (xy 0.55 -8.2) (xy -1.95 -8.2)
+			)
+		)
+	)
+	(zone
+		(net 0)
+		(net_name "")
+		(layers "F.Cu" "B.Cu" "In1.Cu" "In2.Cu" "In3.Cu" "In4.Cu" "In5.Cu" "In6.Cu"
+			"In7.Cu" "In8.Cu" "In9.Cu" "In10.Cu" "In11.Cu" "In12.Cu" "In13.Cu" "In14.Cu"
+			"In15.Cu" "In16.Cu" "In17.Cu" "In18.Cu" "In19.Cu" "In20.Cu" "In21.Cu"
+			"In22.Cu" "In23.Cu" "In24.Cu" "In25.Cu" "In26.Cu" "In27.Cu" "In28.Cu"
+			"In29.Cu" "In30.Cu"
+		)
+		(uuid "6ce2d725-7d35-46a8-a71c-8d849f161791")
+		(hatch full 0.508)
+		(connect_pads
+			(clearance 0)
+		)
+		(min_thickness 0.01)
+		(filled_areas_thickness no)
+		(keepout
+			(tracks allowed)
+			(vias not_allowed)
+			(pads allowed)
+			(copperpour allowed)
+			(footprints allowed)
+		)
+		(placement
+			(enabled no)
+			(sheetname "")
+		)
+		(fill
+			(thermal_gap 0.508)
+			(thermal_bridge_width 0.508)
+		)
+		(polygon
+			(pts
+				(xy -4.9 -6) (xy 3.6 -6) (xy 3.6 -4) (xy -4.9 -4)
+			)
+		)
+	)
+	(zone
+		(net 0)
+		(net_name "")
+		(layers "F.Cu" "B.Cu" "In1.Cu" "In2.Cu" "In3.Cu" "In4.Cu" "In5.Cu" "In6.Cu"
+			"In7.Cu" "In8.Cu" "In9.Cu" "In10.Cu" "In11.Cu" "In12.Cu" "In13.Cu" "In14.Cu"
+			"In15.Cu" "In16.Cu" "In17.Cu" "In18.Cu" "In19.Cu" "In20.Cu" "In21.Cu"
+			"In22.Cu" "In23.Cu" "In24.Cu" "In25.Cu" "In26.Cu" "In27.Cu" "In28.Cu"
+			"In29.Cu" "In30.Cu"
+		)
+		(uuid "cb7d4c5f-b5c4-4966-8941-3866749e52f4")
+		(hatch full 0.508)
+		(connect_pads
+			(clearance 0)
+		)
+		(min_thickness 0.01)
+		(filled_areas_thickness no)
+		(keepout
+			(tracks allowed)
+			(vias not_allowed)
+			(pads allowed)
+			(copperpour allowed)
+			(footprints allowed)
+		)
+		(placement
+			(enabled no)
+			(sheetname "")
+		)
+		(fill
+			(thermal_gap 0.508)
+			(thermal_bridge_width 0.508)
+		)
+		(polygon
+			(pts
+				(xy -1.95 -10.2) (xy 0.55 -10.2) (xy 0.55 -8.2) (xy -1.95 -8.2)
+			)
+		)
+	)
+	(embedded_fonts no)
+	(model "${STAHLLABS_3DMODEL_DIR}/SD_CARD_MICRO_AMPHENOL_1140084168.step"
+		(offset
+			(xyz 0 10 1.5)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 0 0)
+		)
+	)
+)

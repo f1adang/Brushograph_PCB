@@ -37,3 +37,10 @@ fp-info-cache
 *.kicad_pro-bak
 *-backups/
 #auto_saved_files#
+
+# KiCad lock files (present while a project is open)
+*.lck
+~*.lck
+
+# VS Code Local History extension
+.history/
