@@ -26,7 +26,7 @@ USBC  = 'Connector_USB:USB_C_Receptacle_GCT_USB4105-xx-A_16P_TopMnt_Horizontal'
 SSOP10= 'Package_SO:SSOP-10-1EP_3.9x4.9mm_P1mm_EP2.1x3.3mm'
 RJ12FP= 'Connector_RJ:RJ12_Amphenol_54601-x06_Horizontal'
 TRIM   = 'Potentiometer_THT:Potentiometer_Bourns_3296W_Vertical'
-SLIDE  = 'Button_Switch_THT:SW_DIP_SPSTx01_Slide_9.78x4.72mm_W7.62mm_P2.54mm'
+LEVER  = 'Button_Switch_THT:SW_Lever_1P2T_NKK_GW12LxH'
 FUSE06 = 'Fuse:Fuse_1206_3216Metric_Pad1.42x1.75mm_HandSolder'
 
 def stub(part, pin, net, length=7.62, rot=None):
@@ -92,6 +92,21 @@ for seg in [(125.73, 22.86, 128.27, 22.86),   # U5 IN stub
     assert drop_wire(*seg), f'wire {seg} not found'
 assert drop_junction(167.64, 24.13), 'junction not found'
 assert drop_gnd_at(135.89, 33.02), 'U5 GND symbol not found'
+
+# The barrel jack goes too: USB-C PD is now the only power inlet.
+assert drop_symbol('J5'), 'J5 not found'
+for seg in [(110.49, 137.16, 115.57, 137.16),
+            (115.57, 132.08, 115.57, 124.46),
+            (115.57, 124.46, 107.95, 124.46),
+            (107.95, 124.46, 107.95, 127.0)]:
+    assert drop_wire(*seg), f'J5 wire {seg} not found'
+assert drop_gnd_at(107.95, 127.0), 'J5 GND symbol not found'
+for gl in list(find(doc, 'global_label')):
+    a = first(gl, 'at')
+    if abs(f(a[1]) - 110.49) < 0.01 and abs(f(a[2]) - 137.16) < 0.01:
+        doc.remove(gl); break
+else:
+    raise SystemExit('ERROR: barrel-jack label not found')
 
 # what is left of the old regulator output run now becomes the 5V system rail
 sh.label('5V_SYS', 151.13, 30.48, 180)
@@ -183,27 +198,26 @@ sh.wire(*D17.p('A'), *near25)
 sh.wire(*far25, far25[0] + 5.08, pg[1])
 sh.label('5V_SYS', far25[0] + 5.08, pg[1], 0)
 
-# =====================================================  input OR-ing -> VSUP
+# =====================================================  USB-C input -> VSUP
+# Only one inlet now, so there is nothing to OR together: VBUS goes through a
+# resettable fuse to the shared supply rail that feeds both converters.
 YB = 300.0
-D15 = sh.place('Device', 'D_Schottky', 'D15', 'SS34', SMA, 75, YB, 180)
-sh.wire(D15.p('A')[0] - 7.62, YB, *D15.p('A'))
-sh.label('VBUS', D15.p('A')[0] - 7.62, YB, 180)
-D16 = sh.place('Device', 'D_Schottky', 'D16', 'SS34', SMA, 75, YB + 10.16, 180)
-sh.wire(D16.p('A')[0] - 7.62, YB + 10.16, *D16.p('A'))
-sh.label('VIN_DC', D16.p('A')[0] - 7.62, YB + 10.16, 180)
-RAIL = D15.p('K')[0] + 7.62
-sh.wire(*D15.p('K'), RAIL, YB)
-sh.wire(*D16.p('K'), RAIL, YB + 10.16)
-sh.wire(RAIL, YB - 7.62, RAIL, YB + 10.16)
-sh.junction(RAIL, YB)
-sh.pwrflag(RAIL, YB - 7.62, 0)
-C10 = sh.place('Device', 'C', 'C10', '22uF/35V', C1210, RAIL + 12.7, YB + 5.08, 0)
-sh.wire(RAIL, YB + 5.08, *C10.p('1'))
-sh.junction(RAIL, YB + 5.08)
-sh.wire(*C10.p('2'), C10.p('2')[0], C10.p('2')[1] + 2.54)
-sh.gnd(C10.p('2')[0], C10.p('2')[1] + 2.54)
-sh.wire(RAIL, YB + 5.08, RAIL + 25.4, YB + 5.08)
-sh.label('VSUP', RAIL + 25.4, YB + 5.08, 0)
+sh.label('VBUS', 60, YB, 180)
+sh.wire(60, YB, 67.62, YB)
+F1 = sh.place('Device', 'Polyfuse', 'F1', '1.5A',
+              'Fuse:Fuse_1812_4532Metric_Pad1.30x3.40mm_HandSolder', 71.43, YB, 90)
+for x0, x1 in ((75.24, 82.55), (82.55, 90.17), (90.17, 97.79), (97.79, 105.0)):
+    sh.wire(x0, YB, x1, YB)
+for x, ref, val, fp in ((82.55, 'C7', '10uF/35V', C12F),
+                        (90.17, 'C10', '22uF/35V', C1210)):
+    C = sh.place('Device', 'C', ref, val, fp, x, YB + 3.81, 0)
+    sh.junction(x, YB)
+    sh.wire(*C.p('2'), C.p('2')[0], C.p('2')[1] + 2.54)
+    sh.gnd(C.p('2')[0], C.p('2')[1] + 2.54)
+sh.junction(97.79, YB)
+sh.wire(97.79, YB, 97.79, YB - 7.62)
+sh.pwrflag(97.79, YB - 7.62, 0)
+sh.label('VSUP', 105.0, YB, 0)
 
 # =====================================================  buck converters
 def buck(ref_u, X, Y, vout_net, l_ref, l_val, cin_ref, cb_ref, cout_refs,
@@ -294,9 +308,14 @@ YS = 330.0
 D14n = sh.place('Device', 'D_Schottky', 'D14', 'SS14', SMA, 75, YS, 180)
 sh.wire(D14n.p('A')[0] - 7.62, YS, *D14n.p('A'))
 sh.label('5V_LOGIC', D14n.p('A')[0] - 7.62, YS, 180)
-SW1 = sh.place('Switch', 'SW_SPST', 'SW1', 'ESP POWER', SLIDE, 105, YS, 0,
-               ref_at=(105, YS - 6.35, None), val_at=(105, YS - 3.81, None))
-sh.wire(*D14n.p('K'), *SW1.p('1'))
+# A panel lever switch on the board edge. It is a 1P2T part used as a simple
+# break: common to the ESP32, one throw to the board's 5V, the other left open
+# so the far position leaves the module running on its own USB supply.
+SW1 = sh.place('Switch', 'SW_SPDT', 'SW1', 'ESP POWER', LEVER, 105, YS, 180,
+               ref_at=(105, YS - 8.89, None), val_at=(105, YS - 6.35, None))
+sh.route(D14n.p('K'), SW1.p('1'))
+x, y = SW1.p('3')
+sh.items.append(['no_connect', ['at', fmt(x), fmt(y)], ['uuid', uid('nc')]])
 sh.wire(*SW1.p('2'), SW1.p('2')[0] + 10.16, YS)
 sh.label('5V_SYS', SW1.p('2')[0] + 10.16, YS, 0)
 # (5V_SYS already carries a PWR_FLAG up at the ESP32 end of the rail)

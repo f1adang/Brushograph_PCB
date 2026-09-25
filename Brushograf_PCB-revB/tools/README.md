@@ -7,11 +7,16 @@ in KiCad, not here.
 
 Run order, starting from a fresh copy of the rev-A `.kicad_sch` / `.kicad_pcb`:
 
-1. `edit_sch.py`  - barrel-jack input protection, sheet -> A2
-2. `edit_sch2.py` - USB-C PD input, both buck converters, ESP power switch,
+1. `edit_sch.py`  - sheet -> A2, motor-rail bulk cap, 5V system rail
+2. `edit_sch2.py` - USB-C PD input, both buck converters, ESP lever switch,
                     RJ-12 pendant port, and removal of the old linear regulator
-3. `edit_pcb.py`  - places the input-protection parts on the board and re-nets
+                    and barrel jack
+3. `edit_pcb.py`  - grows the outline 25mm upward, places all 36 new parts
+                    (auto-nudging each clear of existing copper) and re-nets
                     every pad from the exported netlist
+4. `fillzones.py` - refills the copper pours. Needs KiCad's bundled Python:
+                    /Applications/KiCad/KiCad.app/Contents/Frameworks/\
+                    Python.framework/Versions/3.9/bin/python3
 
 Between steps 2 and 3, export the netlist:
 

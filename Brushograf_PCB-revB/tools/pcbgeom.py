@@ -41,8 +41,12 @@ def mod_extents(libmod):
     return pad, crt
 
 class Board:
-    def __init__(self, pcb, skip_refs=()):
+    # usable area, 1mm inside the board outline; override after construction
+    LIMITS = (45.7, 241.6, 86.85, 132.85)
+
+    def __init__(self, pcb, skip_refs=(), limits=None):
         self.d = parse(open(pcb).read()) if isinstance(pcb, str) else pcb
+        self.limits = limits or Board.LIMITS
         self.skip = set(skip_refs)
         self.grid = {}
         self._build()
@@ -86,7 +90,23 @@ class Board:
             a = first(v, 'at')
             self._rect(f(a[1]), f(a[2]), f(first(v, 'size')[1]), f(first(v, 'size')[1]), 3)
 
-    def check(self, libmod, x, y, ang, layer):
+    def occupy(self, libmod, x, y, ang, layer):
+        """Mark a newly placed footprint so later placements avoid it."""
+        d = load_mod(libmod)
+        for p in find(d, 'pad'):
+            pat = first(p, 'at'); sz = first(p, 'size')
+            px, py = rot((f(pat[1]), f(pat[2])), ang)
+            thru = str(p[2]) == 'thru_hole'
+            self._rect(x + px, y + py, f(sz[1]), f(sz[2]),
+                       3 if thru else (1 if layer == 'F.Cu' else 2))
+        _, crt = mod_extents(libmod)
+        cs = [rot((cx, cy), ang) for cx in crt[:2] for cy in crt[2:]]
+        xs = [x + c[0] for c in cs]; ys = [y + c[1] for c in cs]
+        self._rect((min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2,
+                   max(xs) - min(xs), max(ys) - min(ys),
+                   3 if layer == 'BOTH' else (1 if layer == 'F.Cu' else 2), clr=0.0)
+
+    def check(self, libmod, x, y, ang, layer, overhang=False):
         """Return a list of complaints for placing `libmod` at x,y,ang on `layer`."""
         d = load_mod(libmod)
         bad = []
@@ -112,10 +132,12 @@ class Board:
                 break
         # board outline
         pad, crt = mod_extents(libmod)
-        for (lo_x, hi_x, lo_y, hi_y), what in ((pad, 'pads'), (crt, 'courtyard')):
+        checks = ((pad, 'pads'),) if overhang else ((pad, 'pads'), (crt, 'courtyard'))
+        for (lo_x, hi_x, lo_y, hi_y), what in checks:
             corners = [rot((cx_, cy_), ang) for cx_ in (lo_x, hi_x) for cy_ in (lo_y, hi_y)]
             xs = [x + c[0] for c in corners]; ys = [y + c[1] for c in corners]
-            if min(xs) < 45.7 or max(xs) > 241.6 or min(ys) < 86.85 or max(ys) > 132.85:
+            lx0, lx1, ly0, ly1 = self.limits
+            if min(xs) < lx0 or max(xs) > lx1 or min(ys) < ly0 or max(ys) > ly1:
                 bad.append(f'{what} outside board: x {min(xs):.2f}..{max(xs):.2f} '
                            f'y {min(ys):.2f}..{max(ys):.2f}')
         return bad

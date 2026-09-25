@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rev-B schematic edits: power-input protection rework."""
+"""Rev-B schematic edits: sheet size, motor-rail bulk cap, 5V system rail."""
 import sys, os, uuid as _uuid
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from kisexp import parse, dump, find, first, prop, propval, Str
@@ -141,40 +141,8 @@ paper[1] = Str('A2')
 RSMD  = 'Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder'
 CSMD  = 'Capacitor_SMD:C_1206_3216Metric_Pad1.33x1.80mm_HandSolder'
 
-# ======================================================= power input rework
-YR = 165.1                      # protected-input rail
+# ======================================================= motor-rail bulk cap
 add += [
-    glabel('VIN', 309.88, YR, 180),
-    wire(309.88, YR, 313.69, YR),
-    symbol('Device', 'Polyfuse', 'F1', '1.5A', 
-           'Fuse:Fuse_1812_4532Metric_Pad1.30x3.40mm_HandSolder', 317.5, YR, 90),
-    wire(321.31, YR, 337.82, YR),
-    # P-FET reverse-polarity protection: drain to the jack, source to the load,
-    # so the body diode blocks when the supply is plugged in backwards.
-    symbol('Transistor_FET', 'AO3401A', 'Q1', 'AO3401A',
-           'Package_TO_SOT_SMD:SOT-23', 342.9, 167.64, 90,
-           ref_at=(336.55, 160.02, None), val_at=(346.71, 160.02, None)),
-    wire(347.98, YR, 350.52, YR),
-    junction(350.52, YR),
-    wire(350.52, YR, 350.52, 177.8),
-    # gate: 100k pull-down turns the FET on, 10V zener clamps Vgs
-    wire(342.9, 172.72, 342.9, 177.8),
-    junction(342.9, 177.8),
-    symbol('Device', 'D_Zener', 'D13', 'BZX84C10', 'Diode_SMD:D_SOD-123',
-           346.71, 177.8, 180,
-           ref_at=(346.71, 173.99, None), val_at=(354.33, 181.61, 'left')),
-    wire(342.9, 177.8, 342.9, 180.34),
-    symbol('Device', 'R', 'R21', '100k', RSMD, 342.9, 184.15, 0),
-    gnd(342.9, 187.96),
-    # input bulk / converter input cap
-    wire(350.52, YR, 358.14, YR),
-    junction(358.14, YR),
-    symbol('Device', 'C', 'C7', '10uF/50V', CSMD, 358.14, 172.72, 0),
-    wire(358.14, YR, 358.14, 168.91),
-    gnd(358.14, 176.53),
-    wire(358.14, YR, 365.76, YR),
-    glabel('VIN_DC', 365.76, YR, 0),
-    # bulk electrolytic on the motor rail
     glabel('5V', 375.92, 160.02, 90),
     wire(375.92, 160.02, 375.92, 166.37),
     # bulk on the motor rail; a 1210 ceramic keeps it on the crowded back side
@@ -183,15 +151,6 @@ add += [
            375.92, 170.18, 0),
     gnd(375.92, 173.99),
 ]
-
-# --- rename the barrel-jack label 5V-EXT -> VIN (now upstream of protection)
-for gl in find(doc, 'global_label'):
-    at = first(gl, 'at')
-    if str(gl[1]) == '5V-EXT' and abs(float(at[1]) - 110.49) < 0.01:
-        gl[1] = Str('VIN')
-        break
-else:
-    raise SystemExit('ERROR: barrel-jack 5V-EXT label not found')
 
 # --- D14: blocking Schottky between the regulator output and the 5V system rail,
 #     so USB 5V on the DevKitC cannot back-feed the converter.

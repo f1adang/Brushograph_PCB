@@ -31,26 +31,34 @@ This PCB repository is part of the larger Brushograph project, which explores "W
 
 ## Rev B (in progress)
 
-`Brushograf_PCB-revB/` is a revision that replaces the power section with a
-USB-C Power Delivery supply feeding an adjustable motor rail, and adds a pendant
-port and an ESP power switch.
+`Brushograf_PCB-revB/` replaces the power section with a USB-C Power Delivery
+supply feeding an adjustable motor rail, and adds a pendant port and an ESP
+power switch.
 
-**Schematic: complete and verified.** **PCB layout: partially done** - see Status below.
+**Schematic: complete and verified. PCB: all parts placed, routing still to do.**
+
+The board grows from **198 x 48mm to 198 x 73mm** - 25mm added along the top
+edge. Everything from rev A keeps its coordinates; all the new parts live in
+the new strip. The RJ-12 needs about 19mm of depth behind the top edge and the
+old board only had 11mm before the back-side SPI tracks, which is what forced
+the growth.
 
 ### What rev B adds
 
-**USB-C Power Delivery input.** A USB-C receptacle (J12) with a CH224K sink
-controller (U6) requests **9V** from the charger - set by the single 6.8k
-resistor R24 on CFG1, per the CH224K datasheet. A "PD OK" LED (D17) off the
-controller's power-good output shows when the contract is up. PD offers no 7.5V
-fixed profile, so the 9V rail feeds two buck converters instead.
+**USB-C Power Delivery is now the only power inlet.** The barrel jack is gone,
+along with its reverse-polarity FET and zener. J12 sits on the **left edge**
+with the receptacle overhanging it; a CH224K sink controller (U6) requests
+**9V**, set by the single 6.8k resistor R24 on CFG1 per the WCH datasheet. A
+"PD OK" LED (D17) on the controller's power-good output shows when the contract
+is up. VBUS reaches the converters through a 1.5A resettable fuse (F1).
+
+PD offers no 7.5V fixed profile, so the 9V rail feeds two buck converters.
 
 **Adjustable motor rail.** U7 (TPS54202, 2A) steps 9V down to the motor rail,
 adjustable with trimmer RV1 over roughly **5.4 - 8.6V**, nominally 7.5V. The
 divider is 100k on top and 7.5k plus the 10k trimmer below, against the
-TPS54202's 0.596V reference. The trimmer's wiper is tied to its top end, so a
-lifted wiper raises the bottom resistance and drops the output rather than
-raising it.
+TPS54202's 0.596V reference. The wiper is tied to the top of the track, so a
+lifted wiper drops the output rather than raising it.
 
 > Running 5V-rated 28BYJ-48 motors at 7.5V is a deliberate overclock: about
 > 300mA per motor with two phases energised, roughly 900mA for three. More
@@ -58,55 +66,56 @@ raising it.
 > 5V first and work up.
 
 **Separate 5V logic rail.** U8 (TPS54202) makes 5.07V for the ESP32. The DevKitC
-cannot be fed 7.5V on its 5V pin - its onboard AMS1117 would dissipate about a
-watt - so logic and motors get separate rails.
+cannot be fed 7.5V on its 5V pin - its onboard AMS1117 would burn about a watt -
+so logic and motors get separate rails.
 
-**ESP power switch.** SW1 cuts the board's 5V feed to the ESP32, so the module
-can be powered and flashed from USB while the rest of the board stays up.
-D14 (SS14) blocks USB 5V from back-feeding the logic buck.
+**ESP power switch.** SW1 is a panel **lever switch on the left edge**, actuator
+overhanging the board. It is a 1P2T part used as a simple break: common to the
+ESP32, one throw to the board's 5V, the other left open, so the far position
+leaves the module running on its own USB supply while the rest of the board
+stays powered. D14 (SS14) blocks USB 5V from back-feeding the logic buck.
 
-**RJ-12 pendant port.** J13 brings UART1 (GPIO 2 = TX, GPIO 15 = RX) and
-switched 5V out to a FluidDial pendant, with a 0.5A resettable fuse (F2), 330R
-series resistors and TVS clamps, mirroring the protection on bdring's official
-pendant module.
+**RJ-12 pendant port** on the **upper edge**, opening facing off the board. J13
+brings UART1 out on GPIO 2 and 15 with switched 5V, behind a 0.5A resettable
+fuse (F2), 330R series resistors and TVS clamps.
 
-**Barrel-jack input protection.** The original jack is kept as an alternative
-DC input: F1 (1.5A polyfuse), Q1 (AO3401A P-FET reverse-polarity protection)
-with a 10V zener gate clamp, and C7. It is Schottky-OR'd with USB-C VBUS
-(D15/D16) onto the shared `VSUP` rail, so either source can power the board and
-neither back-feeds the other.
-
-**J7 repurposed.** J7 pin 3 used to carry the raw barrel-jack rail straight to
-the motors - with a 12V adapter that would destroy them. It now carries the
-regulated adjustable rail (`MOTOR_V`); pin 1 is the 5V logic rail for testing,
-pin 2 is the motor rail.
+**J7 repurposed.** Pin 3 used to carry the raw barrel-jack rail straight to the
+motors, which would have destroyed them with a 12V adapter. It now carries the
+regulated adjustable rail; pin 1 is the 5V logic rail for testing, pin 2 the
+motor rail.
 
 ### Status
 
 | Area | State |
 |---|---|
-| Schematic | Complete. ERC clean relative to rev A; netlist verified net-by-net |
-| Barrel-jack protection | Placed on the PCB, DRC clean |
-| USB-C / PD / bucks / pendant | **Schematic only** - not yet placed on the PCB |
-| Board outline | Still 198 x 48mm; **must grow** to fit the new power section |
-| Routing | 8 ratsnest connections outstanding |
+| Schematic | Complete. 75 parts, 120 nets, netlist verified net by net |
+| ERC | At or below rev A in every category |
+| Placement | All 36 new footprints placed, zones refilled |
+| DRC | No new errors except on J12 - see below |
+| Routing | **53 ratsnest connections outstanding** |
 
-The new power section needs roughly **1100mm2**, and a USB-C receptacle has to
-sit on a board edge. The largest contiguous pocket that is free on both layers
-is about **12 x 35mm**, and it sits under the Coconuts logo at the right-hand
-end; the remaining free copper is fragmented and mostly back-side only. So the
-board has to grow before the power section can be laid out.
+### Known DRC findings
 
-Zones must be refilled in pcbnew after opening the PCB - the command-line DRC
-does not refill them, which is why it reports zone-clearance violations.
+- **J12 reports 27 `shorting_items` and 4 `hole_clearance` errors.** These are
+  not caused by the placement: the same 31 errors appear with the untouched
+  stock footprint alone on an otherwise empty board. The pads have genuine
+  0.2-0.7mm gaps and nothing bridges them - zones, solder mask and neighbouring
+  copper were each ruled out by experiment. Every USB-C footprint in the KiCad
+  library has sub-0.25mm pad gaps, so swapping parts will not help. Worth
+  opening in the GUI, where the marker shows interactively what it thinks is
+  touching, before committing to fab.
+- `allow_soldermask_bridges` is set on J12, which is the correct treatment for a
+  fine-pitch connector and clears 23 mask-bridge errors.
+- Everything else - 4 mounting-hole annular widths, U4's malformed courtyard,
+  5 starved thermals - is inherited unchanged from rev A.
 
 ### Open questions
 
 - **The RJ-12 pin order is unverified.** The board uses
-  `1 = GND, 2 = +5V, 3 = TX, 4 = RX, 5 = +5V, 6 = GND`, chosen so that a
-  standard reversing modular cable keeps power and ground on the right contacts
-  and swaps TX/RX. bdring's official FluidDial pinout could not be confirmed
-  from public documentation - **check it against your cable before building**.
+  `1 = GND, 2 = +5V, 3 = TX, 4 = RX, 5 = +5V, 6 = GND`, chosen so a standard
+  reversing modular cable keeps power and ground on the right contacts and swaps
+  TX/RX. bdring's official FluidDial pinout could not be confirmed from public
+  documentation - **check it against your cable before building**.
 - GPIO2 is an ESP32 strapping pin. It must not be pulled high during boot or the
   chip enters download mode. An idle-high UART receiver at the pendant end is
   fine; anything that actively drives the line is not.
@@ -115,7 +124,7 @@ does not refill them, which is why it reports zone-clearance violations.
 
 - The `MISO` and `MOSI` net names are swapped relative to the SD card: net
   `MISO` (GPIO19) goes to the card's CMD/DI pin, which is physically MOSI. The
-  card works, and the FluidNC config is correct, but **J6's back silkscreen is
+  card works and the FluidNC config is correct, but **J6's back silkscreen is
   mislabelled** - an external SD module wired to J6 per the silk will have DI
   and DO reversed.
 - R1-R12 and C1-C3 still have no values in the schematic, so the BOM is not

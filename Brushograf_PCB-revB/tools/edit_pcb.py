@@ -35,6 +35,42 @@ for n in find(first(netlist, 'nets'), 'net'):
 
 pcb = parse(open(PCB).read())
 
+
+# ------------------------------------------------- grow the board upward
+# The RJ-12 needs ~19mm of depth behind the top edge and the existing strip
+# only has ~11mm before the back-side SPI tracks, so the outline gains 25mm
+# at the top. Everything already placed keeps its coordinates.
+GROW_UP = 25.0
+MID_Y = 109.85
+for it in pcb:
+    if isinstance(it, list) and it[0] == 'gr_line':
+        ly = first(it, 'layer')
+        if ly and str(ly[1]) == 'Edge.Cuts':
+            for key in ('start', 'end'):
+                q = first(it, key)
+                if q and float(q[2]) < MID_Y:
+                    q[2] = fmt(float(q[2]) - GROW_UP)
+for fp in find(pcb, 'footprint'):
+    if str(fp[1]).endswith('brushograf_edgeCut'):
+        for p in find(fp, 'pad'):          # the two top mounting holes move too
+            a = first(p, 'at')
+            if float(a[2]) < 0:
+                a[2] = fmt(float(a[2]) - GROW_UP)
+# The GND pours were drawn overhanging the old edge and clipped by it, so they
+# get the same stretch - otherwise they would stop partway up the new strip.
+for z in find(pcb, 'zone'):
+    if first(z, 'keepout'):
+        continue
+    poly = first(z, 'polygon')
+    if not poly:
+        continue
+    for pt in first(poly, 'pts')[1:]:
+        if pt[0] == 'xy' and float(pt[2]) < MID_Y:
+            pt[2] = fmt(float(pt[2]) - GROW_UP)
+    for filled in find(z, 'filled_polygon'):   # stale fill, pcbnew refills it
+        z.remove(filled)
+print(f'board grown {GROW_UP:g}mm upward')
+
 # ------------------------------------------------- drop parts that left the schematic
 sch_refs = set(sym_uuid)
 import re as _re
@@ -96,8 +132,11 @@ def make_fp(libmod, ref, value, x, y, ang, layer, thru):
     fp[0] = 'footprint'
     fp[1] = Str(libmod)
     # strip library bookkeeping we re-supply ourselves
+    lib_attr = None
     for tag in ('version', 'generator', 'generator_version', 'layer', 'attr', 'embedded_fonts'):
         for it in find(fp, tag):
+            if tag == 'attr':
+                lib_attr = list(it)
             fp.remove(it)
     for p in find(fp, 'property'):
         if str(p[1]) in ('Reference', 'Value'):
@@ -113,7 +152,13 @@ def make_fp(libmod, ref, value, x, y, ang, layer, thru):
     out += [['path', Str('/' + sym_uuid[ref])],
             ['sheetname', Str('/')],
             ['sheetfile', Str('Brushograf_PCB-revB.kicad_sch')],
-            ['attr', 'through_hole' if thru else 'smd']]
+            lib_attr if lib_attr else ['attr', 'through_hole' if thru else 'smd']]
+    # fine-pitch connectors have sub-0.25mm mask webs between contacts by
+    # design; tell DRC those bridges are intentional
+    if ref in ('J12',):
+        at = first(out, 'attr')
+        if at is not None and 'allow_soldermask_bridges' not in [str(x) for x in at[1:]]:
+            at.append('allow_soldermask_bridges')
     # fresh uuids everywhere
     def reuid(n):
         for it in n:
@@ -131,24 +176,96 @@ def make_fp(libmod, ref, value, x, y, ang, layer, thru):
     return out
 
 # ---------------------------------------------------------------- placements
-R12  = 'Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder'
-C12  = 'Capacitor_SMD:C_1206_3216Metric_Pad1.33x1.80mm_HandSolder'
-FUSE = 'Fuse:Fuse_1812_4532Metric_Pad1.30x3.40mm_HandSolder'
-SOT  = 'Package_TO_SOT_SMD:SOT-23'
-SOD  = 'Diode_SMD:D_SOD-123'
-SMA  = 'Diode_SMD:D_SMA_Handsoldering'
-C1210= 'Capacitor_SMD:C_1210_3225Metric_Pad1.33x2.70mm_HandSolder'
+R06   = 'Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder'
+R12   = 'Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder'
+C06   = 'Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder'
+C12   = 'Capacitor_SMD:C_1206_3216Metric_Pad1.33x1.80mm_HandSolder'
+C1210 = 'Capacitor_SMD:C_1210_3225Metric_Pad1.33x2.70mm_HandSolder'
+FUSE18= 'Fuse:Fuse_1812_4532Metric_Pad1.30x3.40mm_HandSolder'
+FUSE12= 'Fuse:Fuse_1206_3216Metric_Pad1.42x1.75mm_HandSolder'
+SOT6  = 'Package_TO_SOT_SMD:SOT-23-6'
+SOD323= 'Diode_SMD:D_SOD-323'
+SMA   = 'Diode_SMD:D_SMA_Handsoldering'
+LFP   = 'Inductor_SMD:L_7.3x7.3_H4.5'
+SSOP10= 'Package_SO:SSOP-10-1EP_3.9x4.9mm_P1mm_EP2.1x3.3mm'
+USBC  = 'Connector_USB:USB_C_Receptacle_GCT_USB4105-xx-A_16P_TopMnt_Horizontal'
+RJ12FP= 'Connector_RJ:RJ12_Amphenol_54601-x06_Horizontal'
+LEVER = 'Button_Switch_THT:SW_Lever_1P2T_NKK_GW12LxH'
+TRIM  = 'Potentiometer_THT:Potentiometer_Bourns_3296W_Vertical'
 
-PLACE = [
-    # input protection, on the back by the barrel jack
-    ('F1',  FUSE, '1.5A',      52,   124,     0, 'B.Cu', False),
-    ('Q1',  SOT,  'AO3401A',   60,   124,     0, 'B.Cu', False),
-    ('D13', SOD,  'BZX84C10',  60,   128,     0, 'B.Cu', False),
-    ('C7',  C12,  '10uF/50V',  63.5, 124,    90, 'B.Cu', False),
-    ('R21', R12,  '100k',      66.5, 128.5,   0, 'B.Cu', False),
-    ('D14', SMA,  'SS14',      77,   124,    90, 'B.Cu', False),
-    ('C8',  C1210,'22uF/25V',  54.5, 128,     0, 'B.Cu', False),
+# ref, footprint, value, x, y, rot, layer, through-hole, may overhang the edge
+WANT = [
+    # edge-mounted connectors and the panel switch
+    # rot 270 points both actuator and receptacle opening off the left edge
+    ('SW1', LEVER, 'ESP POWER',    56.0,  66.0, 270, 'F.Cu', True,  True),
+    ('J12', USBC,  'USB-C PD in',  49.5,  79.0, 270, 'F.Cu', True,  True),
+    ('J13', RJ12FP,'Pendant',     150.0,  63.0,   0, 'F.Cu', True,  True),
+    # USB-C input: fuse and bulk, on the back behind the receptacle
+    ('F1',  FUSE18,'1.5A',         64.0,  66.0,   0, 'B.Cu', False, False),
+    ('C7',  C12,   '10uF/35V',     72.0,  66.0,   0, 'B.Cu', False, False),
+    ('C10', C1210, '22uF/35V',     80.0,  66.0,   0, 'B.Cu', False, False),
+    # PD sink
+    ('U6',  SSOP10,'CH224K',       70.0,  78.0,   0, 'B.Cu', False, False),
+    ('R22', R06,   '5.1k',         62.0,  73.0,   0, 'B.Cu', False, False),
+    ('R23', R06,   '5.1k',         62.0,  76.0,   0, 'B.Cu', False, False),
+    ('C9',  C06,   '1uF',          62.0,  79.0,   0, 'B.Cu', False, False),
+    ('R24', R06,   '6.8k',         62.0,  82.0,   0, 'B.Cu', False, False),
+    ('D17', 'LED_SMD:LED_0805_2012Metric_Pad1.15x1.40mm_HandSolder',
+                   'PD OK',        80.0,  78.0,   0, 'B.Cu', False, False),
+    ('R25', R06,   '1k',           86.0,  78.0,   0, 'B.Cu', False, False),
+    ('D14', SMA,   'SS14',         70.0,  83.0,   0, 'B.Cu', False, False),
+    # motor buck
+    ('U7',  SOT6,  'TPS54202',    108.0,  68.0,   0, 'B.Cu', False, False),
+    ('C11', C1210, '10uF/35V',     99.0,  68.0,   0, 'B.Cu', False, False),
+    ('C12', C06,   '100nF',       108.0,  73.0,   0, 'B.Cu', False, False),
+    ('L1',  LFP,   '10uH 3.5A',   118.0,  68.0,   0, 'B.Cu', False, False),
+    ('C13', C1210, '22uF/25V',    128.0,  68.0,   0, 'B.Cu', False, False),
+    ('C14', C1210, '22uF/25V',    136.0,  68.0,   0, 'B.Cu', False, False),
+    ('R26', R06,   '100k',        128.0,  74.0,   0, 'B.Cu', False, False),
+    ('R27', R06,   '7.5k',        134.0,  74.0,   0, 'B.Cu', False, False),
+    ('RV1', TRIM,  '10k',         128.0,  80.0,   0, 'F.Cu', True,  False),
+    # logic buck
+    ('U8',  SOT6,  'TPS54202',    172.0,  68.0,   0, 'B.Cu', False, False),
+    ('C15', C1210, '10uF/35V',    164.0,  68.0,   0, 'B.Cu', False, False),
+    ('C16', C06,   '100nF',       172.0,  73.0,   0, 'B.Cu', False, False),
+    ('L2',  LFP,   '15uH 2A',     182.0,  68.0,   0, 'B.Cu', False, False),
+    ('C17', C1210, '22uF/25V',    192.0,  68.0,   0, 'B.Cu', False, False),
+    ('R28', R06,   '75k',         192.0,  74.0,   0, 'B.Cu', False, False),
+    ('R29', R06,   '10k',         198.0,  74.0,   0, 'B.Cu', False, False),
+    # pendant protection, near J13
+    ('F2',  FUSE12,'0.5A',        168.0,  80.0,   0, 'B.Cu', False, False),
+    ('R30', R06,   '330',         176.0,  80.0,   0, 'B.Cu', False, False),
+    ('R31', R06,   '330',         182.0,  80.0,   0, 'B.Cu', False, False),
+    ('D18', SOD323,'PESD5V0S1BA', 176.0,  83.5,   0, 'B.Cu', False, False),
+    ('D19', SOD323,'PESD5V0S1BA', 182.0,  83.5,   0, 'B.Cu', False, False),
+    # motor-rail bulk, back side by the driver sockets
+    ('C8',  C1210, '22uF/25V',     54.5, 128.0,   0, 'B.Cu', False, False),
 ]
+
+import pcbgeom, math
+BOARD = pcbgeom.Board(pcb, skip_refs={r for r, *_ in WANT},
+                      limits=(45.7, 241.6, 61.85 + 1.0, 132.85))
+PLACE = []
+for ref, fpname, val, x, y, ang, layer, thru, over in WANT:
+    best = None
+    for radius in (0, 1, 2, 3, 4, 6, 8, 11, 14):
+        cands = [(x, y)] if radius == 0 else [
+            (x + radius * math.cos(t * math.pi / 8), y + radius * math.sin(t * math.pi / 8))
+            for t in range(16)]
+        for cx, cy in cands:
+            cx, cy = round(cx, 2), round(cy, 2)
+            if not BOARD.check(fpname, cx, cy, ang, layer, overhang=over):
+                best = (cx, cy)
+                break
+        if best:
+            break
+    if best is None:
+        raise SystemExit(f'ERROR: no clear spot found for {ref}')
+    if (best[0], best[1]) != (x, y):
+        print(f'  nudged {ref}: ({x},{y}) -> {best}')
+    BOARD.occupy(fpname, best[0], best[1], ang, 'BOTH' if thru else layer)
+    PLACE.append((ref, fpname, val, best[0], best[1], ang, layer, thru))
+
 anchor = pcb.index(find(pcb, 'footprint')[-1]) + 1
 new = [make_fp(lm, ref, val, x, y, a, lay, thru)
        for ref, lm, val, x, y, a, lay, thru in PLACE]
