@@ -12704,7 +12704,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:Conn_01x03_Pin")
+		(lib_id "Switch:SW_SPDT")
 		(at 177.8 19.05 270)
 		(unit 1)
 		(exclude_from_sim no)
@@ -12713,7 +12713,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "ee36eb20-630c-49bf-8c04-c4282cb9a62e")
-		(property "Reference" "J7"
+		(property "Reference" "SW2"
 			(at 177.8 13.97 90)
 			(effects
 				(font
@@ -12721,7 +12721,7 @@
 				)
 			)
 		)
-		(property "Value" "Conn_01x03_Pin"
+		(property "Value" "SW_SPDT"
 			(at 177.8 16.51 90)
 			(effects
 				(font
@@ -12729,7 +12729,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_Molex:Molex_KK-254_AE-6410-03A_1x03_P2.54mm_Vertical"
+		(property "Footprint" "Button_Switch_THT:SW_Slide_1P2T_EG1218"
 			(at 177.8 19.05 0)
 			(effects
 				(font
@@ -12747,7 +12747,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Generic connector, single row, 01x03, script generated"
+		(property "Description" "Switch, single pole double throw"
 			(at 177.8 19.05 0)
 			(effects
 				(font
@@ -12768,7 +12768,7 @@
 		(instances
 			(project ""
 				(path "/d273ac3f-ed4f-4680-93b1-84a7dc3121ff"
-					(reference "J7")
+					(reference "SW2")
 					(unit 1)
 				)
 			)
