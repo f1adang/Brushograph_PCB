@@ -19148,7 +19148,7 @@
 		)
 		(instances
 			(project "Brusograf_PCB"
-				(path "/d273ac3f-ed4f-4680-93b1-84a7dc3121ff"
+				(path "/d273ac3f-ed4f-4680-93b1-84a7dc3121ff/1b34f1d6-21dc-4342-b709-854909a60127"
 					(reference "J7")
 					(unit 1)
 				)
@@ -19176,7 +19176,7 @@
 			)
 		)
 	)
-	(global_label "PROBE"
+	(global_label "GND"
 		(shape input)
 		(at 265.08 140 0)
 		(fields_autoplaced yes)
@@ -19197,7 +19197,7 @@
 			)
 		)
 	)
-	(global_label "GND"
+	(global_label "PROBE"
 		(shape input)
 		(at 265.08 142.54 0)
 		(fields_autoplaced yes)
