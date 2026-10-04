@@ -19083,4 +19083,160 @@
 		)
 	)
 	(embedded_fonts no)
+
+	(symbol
+		(lib_id "Connector:Conn_01x03_Pin")
+		(at 260 140 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "1b34f1d6-21dc-4342-b709-854909a60127")
+		(property "Reference" "J7"
+			(at 260 132.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Conn_01x03_Pin"
+			(at 260 134.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical"
+			(at 260 140 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 260 140 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Generic connector, single row, 01x03, script generated"
+			(at 260 140 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "ec175df6-3afb-4aff-a6b7-bf12aa36ffb7")
+		)
+		(pin "2"
+			(uuid "5c513c8d-7bab-4ca0-8ebb-b22ecc9bf042")
+		)
+		(pin "3"
+			(uuid "79a6cce5-1acd-4e21-8be9-ed1f31724b63")
+		)
+		(instances
+			(project "Brusograf_PCB"
+				(path "/d273ac3f-ed4f-4680-93b1-84a7dc3121ff"
+					(reference "J7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(global_label "3.3V"
+		(shape input)
+		(at 265.08 137.46 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "9922a81a-d858-411a-91fc-de0a8785a685")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 270 137.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "PROBE"
+		(shape input)
+		(at 265.08 140 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "616d97a4-e19f-4d10-8a2e-afa2e774d28f")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 270 140 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape input)
+		(at 265.08 142.54 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "64b738f1-a07d-45c4-bbaf-fe6ac9d2121d")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 270 142.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "PROBE"
+		(shape input)
+		(at 157.48 62.23 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "1623c730-4d60-4ddb-80c5-6a8f0e4c657c")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 152 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+	)
 )
